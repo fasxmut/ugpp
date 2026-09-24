@@ -17,8 +17,7 @@ b2 cleanall
 
 ## Example
 
-[!c++]
-```
+```cpp
 #include <ugpp/vector_tumap>
 #include <iostream>
 
