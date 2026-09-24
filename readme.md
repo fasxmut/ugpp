@@ -15,6 +15,33 @@ b2 install --prefix=/usr/local
 
 b2 cleanall
 
+## Example
+
+[!c++]
+```
+#include <ugpp/vector_tumap>
+#include <iostream>
+
+int main()
+{
+	ugpp::vector_tumap<std::string, std::string, std::string, std::string> map;
+	map.set("url1", "127.0.0.1", "80", "http");
+	map.set("url2", "192.168.1.2", "443", "https");
+	map.set("url3", "192.168.1.2", "447", "https");
+	map.set("url4", "192.168.1.3", "443", "https");
+	contract_assert(map.contains("url3"));
+	contract_assert(map.size() == 4u);
+	map.erase("url3");
+	contract_assert(! map.contains("url3"));
+	contract_assert(map.size() == 3u);
+	for (const auto & [key, host, port, schema]: map)
+	{
+		std::cout << key << " => " << host << " " << port << " " << schema
+			<< std::endl;
+	}
+}
+```
+
 ## Implemented:
 
 ### ugpp::vector_tumap, ugpp::list_tumap
@@ -44,6 +71,5 @@ range-type .keys()
 
 void .clear()
 
-void .erase()
-
+void .erase(key)
 
