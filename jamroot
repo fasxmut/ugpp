@@ -17,7 +17,7 @@ project
 ###############################################################
 # cleanall
 
-if [ MATCH ^(cleanall) : [ modules.peek : ARGV ] ]
+if [ MATCH ^(cleanall)$ : [ modules.peek : ARGV ] ]
 {
 	local cmd = "rm -rf `find $(prj-root) -name bin`" ;
 	echo $(cmd) ;
@@ -43,15 +43,15 @@ rule get-prefix ( )
 		return /usr/local ;
 	}
 
-	if ! [ MATCH ^(/) : $(prefix) ]
+	if [ MATCH ^(\[^/\]) : $(prefix) ]
 	{
-		echo "ERROR: prefix should not be a relative path!" ;
+		echo "ERROR: prefix should be an absolute path !" ;
 		exit ;
 	}
 
-	if [ MATCH ^(/+)$ : $(prefix) ]
+	if [ MATCH ^(\[/.\]+)$ : $(prefix) ]
 	{
-		echo "ERROR: / is not allowed to be used as a prefix !" ;
+		echo "ERROR: / or above level is not allowed to be a prefix !" ;
 		exit ;
 	}
 
@@ -71,7 +71,7 @@ alias
 ;
 explicit install ;
 
-#------- Export ----------------------
+#------- Export Project ----------------------
 
 alias ugpp : ./sources//ugpp ;
 
