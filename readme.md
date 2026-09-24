@@ -18,7 +18,7 @@ b2 cleanall
 ## Example
 
 ```cpp
-#include <ugpp/vector_tumap>
+#include <ugpp/vector_tumap.hpp>
 #include <iostream>
 
 int main()
