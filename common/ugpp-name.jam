@@ -1,0 +1,28 @@
+#
+# Copyright (c) 2026 cppfx.tiv.cc
+#
+# Distributed under the Boost Software License, Version 1.0. (See accompanying
+# file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
+#
+
+class ugpp-name-def
+{
+	rule __init__ ( name )
+	{
+		self.name = $(name) ;
+		echo ">>>>> Building $(self.name) ..." ;
+	}
+
+	rule name ( )
+	{
+		return $(self.name) ;
+	}
+}
+
+rule ugpp-name ( name )
+{
+	import "class" : new ;
+	local obj = [ new ugpp-name-def $(name) ] ;
+	return [ $(obj).name ] ;
+}
+
