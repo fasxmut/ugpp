@@ -14,8 +14,10 @@ constant
 	src-headers
 :
 	ugpp/basic_tuple_map.hpp
-	ugpp/basic_list_tuple_map.hpp
 	ugpp/basic_vector_tuple_map.hpp
+	ugpp/vector_tumap.hpp
+	ugpp/basic_list_tuple_map.hpp
+	ugpp/list_tumap.hpp
 ;
 
 project
@@ -32,6 +34,7 @@ build-project cpp ;
 build-project examples ;
 
 #################################################################
+# Install
 
 install
 	install-headers
@@ -52,11 +55,21 @@ install
 ;
 explicit install-libs ;
 
+install
+	install-share-files
+:
+	$(prj-root)/LICENSE_1_0.txt
+:
+	<location>$(prefix)/share/ugpp
+;
+explicit install-share-files ;
+
 alias
 	install
 :
 	install-headers
 	install-libs
+	install-share-files
 ;
 explicit install ;
 
