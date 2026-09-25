@@ -10,6 +10,7 @@
 #include <tuple>
 #include <concepts>
 #include <memory>
+#include <initializer_list>
 
 //	Method List:
 //		bool .contains(key)
@@ -65,6 +66,17 @@ namespace ugpp
 		constexpr basic_tuple_map() noexcept:
 			__data{}
 		{
+		}
+	public:
+		constexpr basic_tuple_map(
+			const std::initializer_list<self_type::item_type> & init_list__
+		) noexcept:
+			__data{}
+		{
+			for (const auto & [... list]: init_list__)
+			{
+				this->set(list ...);
+			}
 		}
 	public:
 		constexpr bool contains(const self_type::key_type & key) const noexcept
