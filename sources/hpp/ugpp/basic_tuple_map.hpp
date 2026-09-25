@@ -23,7 +23,7 @@
 //		bool .empty()
 //		range-type .keys()
 //		void .clear()
-//		void .erase()
+//		void .erase(key)
 
 namespace ugpp
 {

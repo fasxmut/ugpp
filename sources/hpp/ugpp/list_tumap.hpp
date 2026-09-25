@@ -8,6 +8,7 @@
 #pragma once
 
 #include <tuple>
+#include <concepts>
 #include <ugpp/basic_list_tuple_map.hpp>
 
 namespace ugpp
@@ -17,6 +18,11 @@ namespace ugpp
 		typename t_value1_type,
 		typename ... t_other_value_type_list
 	>
+		requires
+			std::same_as<
+				std::remove_cvref_t<t_key_type>,
+				t_key_type
+			>
 	using list_tumap =
 		ugpp::basic_list_tuple_map<
 			std::allocator<
