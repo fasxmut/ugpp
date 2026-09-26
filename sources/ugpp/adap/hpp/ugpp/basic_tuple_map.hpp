@@ -87,6 +87,7 @@ namespace ugpp
 		using item_type = std::tuple<t_element_type_list ...>;
 		using range_type = t_range_type<self_type::item_type, t_allocator_type>;
 		using const_iterator = self_type::range_type::const_iterator;
+		using iterator = self_type::range_type::iterator;
 		using size_type = self_type::range_type::size_type;
 
 	private:
@@ -182,6 +183,7 @@ namespace ugpp
 
 	public:
 		// Only get by key, no get by pos.
+
 		constexpr self_type::const_iterator find(const self_type::key_type & key) const noexcept
 		{
 			for (self_type::const_iterator itr=__data.begin(); itr!=__data.end(); ++itr)
@@ -192,6 +194,15 @@ namespace ugpp
 			return __data.end();
 		}
 
+		constexpr self_type::iterator find(const self_type::key_type & key) noexcept
+		{
+			for (self_type::iterator itr=__data.begin(); itr!=__data.end(); ++itr)
+			{
+				if (key == std::get<0>(*itr))
+					return itr;
+			}
+			return __data.end();
+		}
 	public:
 		// Extract a node, its type is a tuple.
 		//	If not found: return an empty node.
@@ -209,12 +220,20 @@ namespace ugpp
 			return __data.begin();
 		}
 
+		constexpr self_type::iterator begin() noexcept
+		{
+			return __data.begin();
+		}
 	public:
 		constexpr self_type::const_iterator end() const noexcept
 		{
 			return __data.end();
 		}
 
+		constexpr self_type::iterator end() noexcept
+		{
+			return __data.end();
+		}
 	public:
 		// Collect all keys in one range.
 		constexpr auto keys() const noexcept

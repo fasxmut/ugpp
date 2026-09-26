@@ -18,6 +18,7 @@ progs =
 	map
 	map2
 	map3
+	map4
 ;
 
 for prog in $(progs)
