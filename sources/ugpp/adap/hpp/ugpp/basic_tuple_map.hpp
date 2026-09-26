@@ -12,6 +12,19 @@
 #include <memory>
 #include <initializer_list>
 
+//	Method List:
+//		bool .contains(key)
+//		void .set(key, vlist ...)
+//		const-iterator .find(key)
+//		item-type .extract(key)
+//		const-iterator .begin()
+//		const-iterator .end()
+//		size-type .size()
+//		bool .empty()
+//		range-type .keys()
+//		void .clear()
+//		void .erase(key)
+
 namespace ugpp
 {
 	template <typename ...>
