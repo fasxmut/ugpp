@@ -23,7 +23,7 @@ namespace ugpp
 				std::remove_cvref_t<t_key_type>,
 				t_key_type
 			>
-	using vector_tumap =
+	using vt_map =
 		ugpp::basic_vector_tuple_map<
 			std::allocator<
 				std::tuple<

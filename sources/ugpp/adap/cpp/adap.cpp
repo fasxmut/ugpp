@@ -10,6 +10,6 @@
 #include <ugpp/basic_vector_tuple_map.hpp>
 #include <ugpp/basic_list_tuple_map.hpp>
 
-#include <ugpp/vector_tumap.hpp>
-#include <ugpp/list_tumap.hpp>
+#include <ugpp/vt_map.hpp>
+#include <ugpp/lt_map.hpp>
 

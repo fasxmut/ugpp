@@ -5,8 +5,8 @@
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 //
 
-#include <ugpp/vector_tumap.hpp>
-#include <ugpp/list_tumap.hpp>
+#include <ugpp/vt_map.hpp>
+#include <ugpp/lt_map.hpp>
 #include <iostream>
 
 int main()
@@ -14,7 +14,7 @@ int main()
 	std::cout << std::boolalpha << "Hello, c++!" << std::endl;
 	{
 		std::cout << "========== vector tuple map\n";
-		using map_type = ugpp::vector_tumap<std::string, int, bool>;
+		using map_type = ugpp::vt_map<std::string, int, bool>;
 		map_type map;
 		map.set("host", 9, true);
 		map.set("port", 102, false);
@@ -55,7 +55,7 @@ int main()
 	}
 	{
 		std::cout << "========== list tuple map\n";
-		using map_type = ugpp::list_tumap<std::string, int, bool>;
+		using map_type = ugpp::lt_map<std::string, int, bool>;
 		map_type map;
 		map.set("host", 9, true);
 		map.set("port", 102, false);

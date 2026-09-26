@@ -12,6 +12,8 @@ lib
 	ugpp-base
 :
 	./cpp/base.cpp
+:
+	<include>./hpp
 ;
 
 install

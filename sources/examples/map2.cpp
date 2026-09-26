@@ -5,8 +5,8 @@
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 //
 
-#include <ugpp/list_tumap.hpp>
-#include <ugpp/vector_tumap.hpp>
+#include <ugpp/lt_map.hpp>
+#include <ugpp/vt_map.hpp>
 #include <iostream>
 
 namespace hwt
@@ -60,7 +60,7 @@ int main()
 {
 	{
 		{
-			using map_type = ugpp::vector_tumap<float, int, bool, std::string>;
+			using map_type = ugpp::vt_map<float, int, bool, std::string>;
 			map_type map{
 				{2.1, 3, true, "A"},
 				{3.1, 4, false, "B"},
@@ -76,7 +76,7 @@ int main()
 			std::cout << std::endl;
 		}
 		{
-			using map_type = ugpp::list_tumap<float, int, bool, std::string>;
+			using map_type = ugpp::lt_map<float, int, bool, std::string>;
 			map_type map{
 				{2.1, 3, true, "A"},
 				{3.1, 4, false, "B"},
@@ -94,7 +94,7 @@ int main()
 	}
 
 	{
-		hwt::world<ugpp::vector_tumap, std::string, std::string, std::string, bool> map1{
+		hwt::world<ugpp::vt_map, std::string, std::string, std::string, bool> map1{
 			{"world 0", "280", "A", true},
 			{"world 1", "240", "B", false},
 			{"world 2", "230", "C", true},
@@ -105,7 +105,7 @@ int main()
 		};
 	}
 	{
-		hwt::world<ugpp::list_tumap, std::string, std::string, std::string, bool> map1{
+		hwt::world<ugpp::lt_map, std::string, std::string, std::string, bool> map1{
 			{"world 0", "280", "A", true},
 			{"world 1", "240", "B", false},
 			{"world 2", "230", "C", true},
