@@ -51,9 +51,19 @@ ugpp::vt_map m5{
 	{"World", 4, false, 2.5f}
 };
 
-// Error: mathed a constructor inserted with static_assert(false, ...
+// Error: deducing failed.
 ugpp::vt_map m6{
 	"World", 4, false, 2.5f
+};
+
+// Error: matched a constructor inserted with static_assert(false, ...
+ugpp::vt_map<std::string, int, bool, float> m7{
+	"World"s, 4, false, 2.5f
+};
+
+// Error: matched a constructor inserted with static_assert(false, ...
+ugpp::vt_map<std::string, int, bool, float> m8{
+	"World", 4, false, 2.5f, "not", "is"
 };
 ```
 ## Method list of ugpp::vt_map, ugpp::lt_map

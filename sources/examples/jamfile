@@ -17,6 +17,7 @@ project
 progs =
 	map
 	map2
+	map3
 ;
 
 for prog in $(progs)
