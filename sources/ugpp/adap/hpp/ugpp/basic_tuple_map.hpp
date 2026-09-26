@@ -12,61 +12,88 @@
 #include <memory>
 #include <initializer_list>
 
-//	Method List:
-//		bool .contains(key)
-//		void .set(key, vlist ...)
-//		const-iterator .find(key)
-//		item-type .extract(key)
-//		const-iterator .begin()
-//		const-iterator .end()
-//		size-type .size()
-//		bool .empty()
-//		range-type .keys()
-//		void .clear()
-//		void .erase(key)
+namespace ugpp
+{
+	template <typename ...>
+	class first_type_impl
+	{
+	public:
+		using type = void;
+	};
+
+	template <typename t_first_type, typename ... t_list>
+	class first_type_impl<t_first_type, t_list ...>
+	{
+	public:
+		using type = t_first_type;
+	};
+
+	template <typename t_first_type, typename ... t_list>
+	class first_type_impl<std::tuple<t_first_type, t_list ...>>
+	{
+	public:
+		using type = t_first_type;
+	};
+
+	template <typename ... t_list>
+	using first_type = ugpp::first_type_impl<t_list ...>::type;
+
+	template <typename t_type>
+	concept non_cvref_k =
+		std::same_as<
+			std::remove_cvref_t<t_type>,
+			t_type
+		>
+	;
+}	// namespace ugpp
 
 namespace ugpp
 {
 	template <
 		template <typename, typename> typename t_range_type,
 		typename t_allocator_type,
-		typename t_key_type,	// Requires a key-type and at least one vlaue-type
-		typename t_value1_type,
-		typename ... t_other_value_type_list
+		typename ... t_element_type_list
 	>
 		requires
-			std::same_as<
-				std::remove_cvref_t<t_key_type>,
-				t_key_type
-			>
+				// Requires a key-type and at least one value-type
+			((sizeof ... (t_element_type_list)) > 1u)
+			&&
+				// The key type must be a non-const and non-reference type.
+			ugpp::non_cvref_k<ugpp::first_type<t_element_type_list ...>>
 	class basic_tuple_map
 	{
 	private:
 		using self_type = ugpp::basic_tuple_map<
 			t_range_type,
 			t_allocator_type,
-			t_key_type,
-			t_value1_type,
-			t_other_value_type_list ...
+			t_element_type_list ...
 		>;
+
 	public:
-		using key_type = t_key_type;
-		using item_type = std::tuple<t_key_type, t_value1_type, t_other_value_type_list ...>;
-		using range_type = t_range_type<item_type, t_allocator_type>;
-		using const_iterator_type = range_type::const_iterator;
-		using size_type = range_type::size_type;
+		using key_type = ugpp::first_type<t_element_type_list ...>;
+		using item_type = std::tuple<t_element_type_list ...>;
+		using range_type = t_range_type<self_type::item_type, t_allocator_type>;
+		using const_iterator = self_type::range_type::const_iterator;
+		using size_type = self_type::range_type::size_type;
+
 	private:
 		self_type::range_type __data;
+
 	public:
 		constexpr virtual ~basic_tuple_map() noexcept
 		{
 			this->clear();
 		}
+
+/////////////////////////////////////////////////////////////////////////
+// constructors
+
 	public:
 		constexpr basic_tuple_map() noexcept:
 			__data{}
 		{
 		}
+
 	public:
 		constexpr basic_tuple_map(
 			const std::initializer_list<self_type::item_type> & init_list__
@@ -78,50 +105,81 @@ namespace ugpp
 				this->set(list ...);
 			}
 		}
+
 	public:
+		constexpr basic_tuple_map(
+			const auto & ... any
+		) noexcept
+		{
+			static_assert(false, "ERROR: ugpp::basic_tuple_map: constructors match failed!");
+		}
+
+/////////////////////////////////////////////////////////////////////////
+
+	public:
+		constexpr void clear() noexcept
+		{
+			__data.clear();
+			__data = {};
+			contract_assert(__data.empty());
+			contract_assert(__data.size() == 0);
+		}
+
+	public:
+		constexpr self_type::size_type size() const noexcept
+		{
+			return __data.size();
+		}
+
+		constexpr bool empty() const noexcept
+		{
+			return __data.empty();
+		}
+
 		constexpr bool contains(const self_type::key_type & key) const noexcept
 		{
-			for (const auto & [k, ... values]: __data)
+			for (const auto & [k, ... _]: __data)
 			{
-				if (key == k)
+				if (k == key)
 					return true;
 			}
-			// other cases:
+			// Other cases:
 			return false;
 		}
+
 	public:
 		// For new key: only allow to push at the end.
 		// For old key: update values.
 		constexpr void set(
-			const key_type & key,
-			const t_value1_type & value1,
-			const t_other_value_type_list & ... value_list
+			const t_element_type_list & ... element_list
 		) noexcept
 		{
+			const auto tuple = self_type::item_type{element_list ...};
 			for (auto & vv: __data)
 			{
-				if (key == std::get<0>(vv))
+				if (std::get<0>(vv) == std::get<0>(tuple))
 				{
-					vv = self_type::item_type{key, value1, value_list ...};
+					vv = tuple;
 					return;
 				}
 			}
-
-			// otherwise:
-
-			__data.emplace_back(key, value1, value_list ...);
+			// Otherwise:
+			__data.push_back(tuple);
 		}
+
 	public:
 		// Only get by key, no get by pos.
-		constexpr const_iterator_type find(const self_type::key_type & key) const noexcept
+		constexpr self_type::const_iterator find(const self_type::key_type & key) const noexcept
 		{
-			for (const_iterator_type itr=__data.begin(); itr!=__data.end(); ++itr)
+			for (self_type::const_iterator itr=__data.begin(); itr!=__data.end(); ++itr)
 			{
 				if (key == std::get<0>(*itr))
 					return itr;
 			}
 			return __data.end();
 		}
+
+	public:
 		// Extract a node, its type is a tuple.
 		//	If not found: return an empty node.
 		constexpr self_type::item_type extract(const self_type::key_type & key) const noexcept
@@ -131,45 +189,30 @@ namespace ugpp
 				return *itr;
 			return {};
 		}
+
 	public:
-		constexpr const_iterator_type begin() const noexcept
+		constexpr self_type::const_iterator begin() const noexcept
 		{
 			return __data.begin();
 		}
+
 	public:
-		constexpr const_iterator_type end() const noexcept
+		constexpr self_type::const_iterator end() const noexcept
 		{
 			return __data.end();
 		}
-	public:
-		constexpr self_type::size_type size() const noexcept
-		{
-			return __data.size();
-		}
-	public:
-		constexpr bool empty() const noexcept
-		{
-			return __data.empty();
-		}
+
 	public:
 		// Collect all keys in one range.
 		constexpr auto keys() const noexcept
 		{
 			using result_type = t_range_type<self_type::key_type, std::allocator<self_type::key_type>>;
 			result_type tmp{};
-			for (const auto & [k, ... vlist]: __data)
+			for (const auto & [k, ... _]: __data)
 			{
 				tmp.push_back(k);
 			}
 			return tmp;
-		}
-	public:
-		constexpr void clear() noexcept
-		{
-			__data.clear();
-			__data = {};
-			contract_assert(__data.empty());
-			contract_assert(__data.size() == 0);
 		}
 	public:
 		constexpr void erase(const self_type::key_type & key) noexcept
@@ -179,6 +222,6 @@ namespace ugpp
 				return;
 			__data.erase(itr);
 		}
-	};	// class tuple_map
+	};	// class basic_tuple_map
 }	// namespace ugpp
 
