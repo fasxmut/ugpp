@@ -54,11 +54,21 @@ install
 ;
 explicit install-lib ;
 
+install
+	install-share
+:
+	../../LICENSE_1_0.txt
+:
+	<location>$(prefix)/share/ugpp
+;
+explicit install-share ;
+
 alias
 	install
 :
 	install-headers
 	install-lib
+	install-share
 ;
 explicit install ;
 
