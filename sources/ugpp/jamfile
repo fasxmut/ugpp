@@ -1,0 +1,64 @@
+#
+# Copyright (c) 2026 cppfx.tiv.cc
+#
+# Distributed under the Boost Software License, Version 1.0. (See accompanying
+# file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
+#
+
+constant name : $(name)/ugpp ;
+show-build $(name) : >>>>>>>>> ;
+
+build-project adap ;
+build-project base ;
+
+#############################################################################
+
+lib
+	ugpp
+:
+	./base//ugpp-base
+	./adap//ugpp-adap
+:
+	<version>$(version)
+	<tag>@make-version
+:
+:
+	<include>./base/hpp
+	<include>./adap/hpp
+;
+
+rule make-version ( name : type ? : props )
+{
+	import common ;
+	local name = [ common.format-name <base> : $(name) : $(type) : $(props) ] ;
+	local version = [ $(props).get <version> ] ;
+	return $(name).$(version) ;
+}
+
+#############################################################################
+
+alias
+	install-headers
+:
+	./base//install-headers
+	./adap//install-headers
+;
+explicit install-headers ;
+
+install
+	install-lib
+:
+	ugpp
+:
+	<location>$(prefix)/lib
+;
+explicit install-lib ;
+
+alias
+	install
+:
+	install-headers
+	install-lib
+;
+explicit install ;
+

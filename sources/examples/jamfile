@@ -6,14 +6,12 @@
 #
 
 constant name : $(name)/examples ;
-
-import ../../common/ugpp-name : ugpp-name ;
+show-build $(name) : >>>>>>>>> ;
 
 project
-	[ ugpp-name $(name) ]
 :
 	requirements
-		<library>../cpp//ugpp
+		<library>..//ugpp
 ;
 
 progs =

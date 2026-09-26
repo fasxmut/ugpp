@@ -5,34 +5,76 @@
 # file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 #
 
-
 constant name : ugpp ;
-path-constant prj-root : . ;
 
-import ./common/ugpp-name.jam : ugpp-name ;
-project
-	[ ugpp-name $(name) ]
-;
+path-constant prj-dir : . ;
 
-###############################################################
-# cleanall
+#################################################################
 
-if [ MATCH ^(cleanall)$ : [ modules.peek : ARGV ] ]
+rule help ( )
 {
-	local cmd = "rm -rf `find $(prj-root) -name bin`" ;
-	echo $(cmd) ;
-	SHELL $(cmd) ;
+	if ! [ MATCH ^(help)$ : [ modules.peek : ARGV ] ]
+	{
+		return ;
+	}
+
+	# else
+
+	echo "b2 [build options]" ;
+	echo "	Get [build options]: b2 --help" ;
+	echo "	Examples:" ;
+	echo "		b2 -q -j7" ;
+	echo "		b2 -q -j7 -a" ;
+	echo "b2 install --prefix=/sand" ;
+	echo "b2 cleanall" ;
+
 	exit ;
 }
 
-###############################################################
+help ;
 
-build-project sources ;
+#################################################################
 
-###############################################################
-# For library sources
+rule cleanall ( path )
+{
+	if ! [ MATCH ^(cleanall)$ : [ modules.peek : ARGV ] ]
+	{
+		return ;
+	}
 
-#------- prefix ----------------------
+	# else
+
+	echo "cleanall ..." ;
+
+	local cmd = "rm -rf `find $(path) -name bin`" ;
+
+	echo $(cmd) ;
+	SHELL $(cmd) ;
+
+	exit ;
+}
+
+cleanall $(prj-dir) ;
+
+#################################################################
+
+constant version.major : 0 ;
+constant version.minor : 0 ;
+constant version.patch : 0 ;
+constant version : $(version.major).$(version.minor).$(version.patch) ;
+
+#################################################################
+
+rule show-build ( name : mark )
+{
+	echo "$(mark) Building $(name) ..." ;
+}
+
+#################################################################
+
+show-build $(name) : >>> ;
+
+#################################################################
 
 rule get-prefix ( )
 {
@@ -40,38 +82,48 @@ rule get-prefix ( )
 
 	if ! $(prefix)
 	{
-		return /usr/local ;
+		if [ MATCH ^(--prefix) : [ modules.peek : ARGV ] ]
+		{
+			echo "ERROR:" ;
+			echo "Format: --prefix=value , and empty value is not allowed!" ;
+			exit ;
+		}
+		else
+		{
+			prefix = /usr/local ;
+		}
 	}
 
-	if [ MATCH ^(\[^/\]) : $(prefix) ]
+	if ! [ MATCH ^(/) : $(prefix) ]
 	{
-		echo "ERROR: prefix should be an absolute path !" ;
+		echo "ERROR: prefix must be an absolute path !" ;
 		exit ;
 	}
 
 	if [ MATCH ^(\[/.\]+)$ : $(prefix) ]
 	{
-		echo "ERROR: / or above level is not allowed to be a prefix !" ;
+		echo "ERROR: prefix error: root path is not allowed." ;
 		exit ;
 	}
 
 	return $(prefix) ;
 }
 
-path-constant prefix : [ get-prefix ] ;
+constant prefix : [ get-prefix ] ;
 
-echo "Set prefix: $(prefix)" ;
+#################################################################
 
-#------- install ----------------------
-
-alias
-	install
+project
 :
-	./sources//install
+	requirements
+		<cxxstd>26
 ;
+
+build-project sources ;
+
+alias install : ./sources//install ;
 explicit install ;
 
-#------- Export Project ----------------------
-
+# Export library
 alias ugpp : ./sources//ugpp ;
 
